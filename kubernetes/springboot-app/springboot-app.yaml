@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: springboot-app
-          image: "stazdx/otel-springboot-prometheus"
+          image: "idefav/otel-springboot-prometheus"
           imagePullPolicy: Always
           ports:
             - name: http
@@ -27,22 +27,22 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8081
+              port: 8080
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8081
+              port: 8080
           startupProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8081
+              port: 8080
             periodSeconds: 5
             failureThreshold: 30
           env:
             - name: SERVER_PORT
               value: '8080'
             - name: MANAGEMENT_SERVER_PORT
-              value: '8081'
+              value: '8080'
             # Setting OTEL_EXPORTER_METRICS: none - Default: OTLP
             - name: OTEL_METRICS_EXPORTER
               value: none
@@ -50,7 +50,7 @@ spec:
               value: otlp,logging
             # Setting Tempo Distributor Service using GRPC Port -> 4317
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: http://tempo-tempo-distributed-distributor.observability.svc.cluster.local:4317
+              value: http://tempo-distributor.observability.svc.cluster.local:4317
             - name: OTEL_SERVICE_NAME
               value: springboot-app
             - name: KUBE_POD_NAME
@@ -69,7 +69,7 @@ metadata:
   annotations:
     # Annotations for Prometheus - scrape config 
     prometheus.io/path: '/actuator/prometheus'
-    prometheus.io/port: 'actuator'
+    prometheus.io/port: 'http'
     prometheus.io/scrape: 'true'
 spec:
   type: LoadBalancer
